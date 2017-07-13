@@ -4,7 +4,6 @@ namespace Vanare\BehatCucumberJsonFormatter\Renderer;
 
 use Vanare\BehatCucumberJsonFormatter\Formatter\FormatterInterface;
 use Vanare\BehatCucumberJsonFormatter\Node;
-use Vanare\BehatCucumberJsonFormatter\Renderer\RendererInterface;
 
 class JsonRenderer implements RendererInterface
 {
@@ -81,15 +80,18 @@ class JsonRenderer implements RendererInterface
         $currentFeature = [
             'uri' => $feature->getUri(),
             'id' => $feature->getId(),
-            'tags' => $feature->getTags() ? $this->processTags($feature->getTags()) : [],
             'keyword' => $feature->getKeyword(),
             'name' => $feature->getName(),
             'line' => $feature->getLine(),
-            'description' => $feature->getDescription(),
-            'elements' => [],
+            'description' => $feature->getDescription() ?: '',
         ];
 
-        if (is_array($feature->getScenarios())) {
+        if ($feature->getTags()) {
+            $currentFeature['tags'] = $this->processTags($feature->getTags());
+        }
+
+        if ($feature->getScenarios()) {
+            $currentFeature['elements'] = [];
             foreach ($feature->getScenarios() as $scenario) {
                 array_push($currentFeature['elements'], $this->processScenario($scenario));
             }
@@ -107,23 +109,26 @@ class JsonRenderer implements RendererInterface
     {
         $currentScenario = [
             'id' => $scenario->getId(),
-            'tags' => $scenario->getTags() ? $this->processTags($scenario->getTags()) : [],
             'keyword' => $scenario->getKeyword(),
             'name' => $scenario->getName(),
             'line' => $scenario->getLine(),
             'description' => $scenario->getDescription(),
             'type' => $scenario->getType(),
             'steps' => [],
-            'examples' => [],
         ];
 
-        if (is_array($scenario->getSteps())) {
+        if ($scenario->getTags()) {
+            $currentScenario['tags'] = $this->processTags($scenario->getTags());
+        }
+
+        if ($scenario->getSteps()) {
             foreach ($scenario->getSteps() as $step) {
                 array_push($currentScenario['steps'], $this->processStep($step));
             }
         }
 
-        if (is_array($scenario->getExamples())) {
+        if ($scenario->getExamples()) {
+            $currentScenario['examples'] = [];
             foreach ($scenario->getExamples() as $example) {
                 array_push($currentScenario['examples'], $this->processExample($example));
             }

@@ -24,8 +24,6 @@ class StepTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('status', $result);
         $this->assertEquals(Step::$resultLabels[$resultCode], $result['status']);
-        $this->assertArrayHasKey('error_message', $result);
-        $this->assertNull($result['error_message']);
         $this->assertArrayHasKey('duration', $result);
     }
 
@@ -46,7 +44,6 @@ class StepTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($result));
         $this->assertArrayHasKey('status', $result);
         $this->assertEquals(Step::$resultLabels[$resultCode], $result['status']);
-        $this->assertArrayHasKey('error_message', $result);
         $this->assertArrayHasKey('duration', $result);
     }
 

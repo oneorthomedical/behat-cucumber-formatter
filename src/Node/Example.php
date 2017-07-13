@@ -2,8 +2,6 @@
 
 namespace Vanare\BehatCucumberJsonFormatter\Node;
 
-use Vanare\BehatCucumberJsonFormatter\Node\ExampleRow;
-
 class Example
 {
     /**

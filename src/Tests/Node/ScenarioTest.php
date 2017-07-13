@@ -17,7 +17,7 @@ class ScenarioTest extends \PHPUnit_Framework_TestCase
     public function getId()
     {
         $name = 'This is a test name, test name for awesome feature';
-        $expectedId = sprintf('this-is-a-test-name,-test-name-for-awesome-feature;%s', static::FEATURE_ID);
+        $expectedId = sprintf('%s;this-is-a-test-name,-test-name-for-awesome-feature', static::FEATURE_ID);
 
         $scenario = $this->createScenario();
         $scenario->setName($name);

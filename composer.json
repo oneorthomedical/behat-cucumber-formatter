@@ -1,20 +1,25 @@
 {
-  "name": "vanare/behat-cucumber-json-formatter",
+  "name": "cawolf/behat-cucumber-json-formatter",
   "description": "Behat extension for generating json reports",
   "keywords": ["behat", "json", "formatter", "cucumber", "jenkins"],
-  "homepage": "https://github.com/Vanare/behat-cucumber-formatter",
+  "homepage": "https://github.com/cawolf/behat-cucumber-formatter",
   "license": "MIT",
   "authors": [
     {
       "name": "Vanare Team",
       "email": "opensource@vanare.com",
       "homepage": "http://www.vanare.com/",
+      "role": "Original Developer"
+    },
+    {
+      "name": "Christian Alexander Wolf",
+      "email": "mail@cawolf.de",
       "role": "Developer"
     }
   ],
   "require": {
     "php": ">=5.5.0",
-    "behat/behat": "~3.0"
+    "behat/behat": "^3.0"
   },
   "minimum-stability": "dev",
   "config": {
@@ -22,7 +27,8 @@
   },
   "require-dev": {
     "mikey179/vfsStream": "1.6.0",
-    "phpunit/phpunit": "4.*"
+    "phpunit/phpunit": "^5.0",
+    "symfony/process": "^3.0"
   },
   "autoload": {
     "psr-4": {

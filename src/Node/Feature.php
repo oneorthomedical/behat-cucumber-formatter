@@ -2,9 +2,10 @@
 
 namespace Vanare\BehatCucumberJsonFormatter\Node;
 
+use Vanare\BehatCucumberJsonFormatter\Printer\FileOutputPrinter;
+
 class Feature
 {
-
     /**
      * @var string
      */
@@ -18,7 +19,7 @@ class Feature
     /**
      * @var string
      */
-    private $description;
+    private $description = '';
 
     /**
      * @var array
@@ -194,6 +195,14 @@ class Feature
     }
 
     /**
+     * @return string
+     */
+    public function getFilenameForReport()
+    {
+        return dirname($this->file) . FileOutputPrinter::FILE_SEPARATOR . basename($this->file, '.feature');
+    }
+
+    /**
      * @return Scenario[]
      */
     public function getScenarios()
@@ -235,7 +244,7 @@ class Feature
         $this->failedScenarios = $failedScenarios;
     }
 
-    public function addFailedScenario($number = 1)
+    public function addFailedScenario()
     {
         $this->failedScenarios++;
     }
@@ -256,10 +265,7 @@ class Feature
         $this->passedScenarios = $passedScenarios;
     }
 
-    /**
-     * @param int $number
-     */
-    public function addPassedScenario($number = 1)
+    public function addPassedScenario()
     {
         $this->passedScenarios++;
     }

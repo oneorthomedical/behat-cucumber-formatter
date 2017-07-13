@@ -3,7 +3,6 @@
 namespace Vanare\BehatCucumberJsonFormatter\Node;
 
 use Behat\Behat\Tester\Result\StepResult;
-use Behat\Testwork\Tester\Result\TestResult;
 
 class Step
 {
@@ -144,11 +143,15 @@ class Step
             $status = static::$resultLabels[$this->getResultCode()];
         }
 
-        return [
+        $result = [
             'status' => $status,
-            'error_message' => $this->getException(),
             'duration' => $this->getDuration() * 1000 * 1000000,
         ];
+        if ($this->getException()) {
+            $result['error_message'] = $this->getException();
+        }
+
+        return $result;
     }
 
     /**
@@ -310,5 +313,4 @@ class Step
     {
         $this->duration = $duration;
     }
-
 }

@@ -151,9 +151,10 @@ class Scenario
     public function getId()
     {
         return sprintf(
-            '%s;%s',
+            '%s;%s%s',
+            $this->getFeature()->getId(),
             preg_replace('/\s/', '-', mb_strtolower($this->getName(), 'UTF-8')),
-            $this->getFeature()->getId()
+            $this->getType() === 'scenario_outline' ? '---' . $this->getLine() : ''
         );
     }
 

@@ -2,17 +2,18 @@
 
 namespace Vanare\BehatCucumberJsonFormatter\Formatter;
 
-use Vanare\BehatCucumberJsonFormatter\Renderer\JsonRenderer;
-use Vanare\BehatCucumberJsonFormatter\Node;
-use Vanare\BehatCucumberJsonFormatter\Renderer\RendererInterface;
-use Vanare\BehatCucumberJsonFormatter\Printer\FileOutputPrinter;
 use Behat\Behat\EventDispatcher\Event as BehatEvent;
 use Behat\Behat\Tester\Result;
-use Behat\Testwork\EventDispatcher\Event as TestworkEvent;
 use Behat\Testwork\Counter\Memory;
 use Behat\Testwork\Counter\Timer;
+use Behat\Testwork\EventDispatcher\Event as TestworkEvent;
 use Behat\Testwork\Output\Printer\OutputPrinter;
 use Behat\Testwork\Tester\Result\TestResult;
+use Behat\Testwork\Tester\Result\TestResults;
+use Vanare\BehatCucumberJsonFormatter\Node;
+use Vanare\BehatCucumberJsonFormatter\Printer\FileOutputPrinter;
+use Vanare\BehatCucumberJsonFormatter\Renderer\JsonRenderer;
+use Vanare\BehatCucumberJsonFormatter\Renderer\RendererInterface;
 
 class Formatter implements FormatterInterface
 {
@@ -106,75 +107,54 @@ class Formatter implements FormatterInterface
     private $skippedSteps;
 
     /**
-     * @param $filename
+     * @param $fileNamePrefix
      * @param $outputDir
      */
-    public function __construct($filename, $outputDir)
+    public function __construct($fileNamePrefix, $outputDir)
     {
         $this->renderer = new JsonRenderer($this);
-        $this->printer = new FileOutputPrinter($filename, $outputDir);
+        $this->printer = new FileOutputPrinter($fileNamePrefix, $outputDir);
         $this->timer = new Timer();
         $this->memory = new Memory();
     }
 
-    /**
-     * @return array
-     */
+    /** @inheritdoc */
     public static function getSubscribedEvents()
     {
-        return array(
-            'tester.exercise_completed.before' => 'onBeforeExercise',
-            'tester.exercise_completed.after' => 'onAfterExercise',
-            'tester.suite_tested.before' => 'onBeforeSuiteTested',
-            'tester.suite_tested.after' => 'onAfterSuiteTested',
-            'tester.feature_tested.before' => 'onBeforeFeatureTested',
-            'tester.feature_tested.after' => 'onAfterFeatureTested',
-            'tester.scenario_tested.before' => 'onBeforeScenarioTested',
-            'tester.scenario_tested.after' => 'onAfterScenarioTested',
-            'tester.outline_tested.before' => 'onBeforeOutlineTested',
-            'tester.outline_tested.after' => 'onAfterOutlineTested',
-            'tester.step_tested.after' => 'onAfterStepTested',
-        );
+        return [
+            TestworkEvent\ExerciseCompleted::BEFORE => 'onBeforeExercise',
+            TestworkEvent\ExerciseCompleted::AFTER => 'onAfterExercise',
+            TestworkEvent\SuiteTested::BEFORE => 'onBeforeSuiteTested',
+            TestworkEvent\SuiteTested::AFTER => 'onAfterSuiteTested',
+            BehatEvent\FeatureTested::BEFORE => 'onBeforeFeatureTested',
+            BehatEvent\FeatureTested::AFTER => 'onAfterFeatureTested',
+            BehatEvent\ScenarioTested::BEFORE => 'onBeforeScenarioTested',
+            BehatEvent\ScenarioTested::AFTER => 'onAfterScenarioTested',
+            BehatEvent\OutlineTested::BEFORE => 'onBeforeOutlineTested',
+            BehatEvent\OutlineTested::AFTER => 'onAfterOutlineTested',
+            BehatEvent\StepTested::AFTER => 'onAfterStepTested',
+        ];
     }
 
-    /**
-     * Returns formatter description.
-     *
-     * @return string
-     */
+    /** @inheritdoc */
     public function getDescription()
     {
         return 'Cucumber style formatter';
     }
 
-    /**
-     * Returns formatter output printer.
-     *
-     * @return OutputPrinter
-     */
+    /** @inheritdoc */
     public function getOutputPrinter()
     {
         return $this->printer;
     }
 
-    /**
-     * Sets formatter parameter.
-     *
-     * @param string $name
-     * @param mixed  $value
-     */
+    /** @inheritdoc */
     public function setParameter($name, $value)
     {
         $this->parameters[$name] = $value;
     }
 
-    /**
-     * Returns parameter name.
-     *
-     * @param string $name
-     *
-     * @return mixed
-     */
+    /** @inheritdoc */
     public function getParameter($name)
     {
         return $this->parameters[$name];
@@ -196,9 +176,7 @@ class Formatter implements FormatterInterface
         return $this->memory;
     }
 
-    /**
-     * @return Node\Suite[]
-     */
+    /** @inheritdoc */
     public function getSuites()
     {
         return $this->suites;
@@ -328,6 +306,13 @@ class Formatter implements FormatterInterface
         $this->timer->stop();
 
         $this->renderer->render();
+        $this->printer->setResultFileName(
+            str_replace(
+                DIRECTORY_SEPARATOR,
+                FileOutputPrinter::FILE_SEPARATOR,
+                $this->getCurrentFeature()->getFilenameForReport()
+            )
+        );
         $this->printer->write($this->renderer->getResult());
     }
 
@@ -360,6 +345,7 @@ class Formatter implements FormatterInterface
         $feature->setDescription($event->getFeature()->getDescription());
         $feature->setTags($event->getFeature()->getTags());
         $feature->setFile($event->getFeature()->getFile());
+        $feature->setLine($event->getFeature()->getLine());
         $feature->setKeyword($event->getFeature()->getKeyword());
         $this->currentFeature = $feature;
     }
@@ -382,8 +368,17 @@ class Formatter implements FormatterInterface
      */
     public function onBeforeScenarioTested(BehatEvent\BeforeScenarioTested $event)
     {
+        $fullTitle = explode("\n", $event->getScenario()->getTitle());
+        if (count($fullTitle) > 1) {
+            $title = array_shift($fullTitle);
+        } else {
+            $title = implode("\n", $fullTitle);
+        }
+        $description = implode("\n", $fullTitle);
+
         $scenario = new Node\Scenario();
-        $scenario->setName($event->getScenario()->getTitle());
+        $scenario->setName($title);
+        $scenario->setDescription($description);
         $scenario->setTags($event->getScenario()->getTags());
         $scenario->setLine($event->getScenario()->getLine());
         $scenario->setType($event->getScenario()->getNodeType());
@@ -420,7 +415,7 @@ class Formatter implements FormatterInterface
         $scenario->setName($event->getOutline()->getTitle());
         $scenario->setTags($event->getOutline()->getTags());
         $scenario->setLine($event->getOutline()->getLine());
-        $scenario->setType($event->getOutline()->getNodeType());
+        $scenario->setType('scenario_outline');
         $scenario->setKeyword($event->getOutline()->getKeyword());
         $scenario->setFeature($this->currentFeature);
         $this->currentScenario = $scenario;
@@ -431,24 +426,39 @@ class Formatter implements FormatterInterface
      */
     public function onAfterOutlineTested(BehatEvent\AfterOutlineTested $event)
     {
-        $scenarioPassed = $event->getTestResult()->isPassed();
+        /** @var TestResults $testResults */
+        $testResults = $event->getTestResult();
+        $stepCount = count($event->getOutline()->getSteps());
+        foreach ($testResults as $i => $testResult) {
+            $example = clone $this->currentScenario;
 
-        if ($scenarioPassed) {
-            $this->passedScenarios[] = $this->currentScenario;
-            $this->currentFeature->addPassedScenario();
-        } else {
-            $this->failedScenarios[] = $this->currentScenario;
-            $this->currentFeature->addFailedScenario();
+            // use correct line number of example row
+            $line = $event->getOutline()->getExampleTable()->getRowLine($i + 1);
+            $example->setLine($line);
+
+            // remove all steps and attach only steps for that example row
+            $steps = array_slice($example->getSteps(), $i * $stepCount, $stepCount);
+            $example->setSteps($steps);
+
+            $scenarioPassed = $testResult->isPassed();
+
+            if ($scenarioPassed) {
+                $this->passedScenarios[] = $example;
+                $this->currentFeature->addPassedScenario();
+            } else {
+                $this->failedScenarios[] = $example;
+                $this->currentFeature->addFailedScenario();
+            }
+
+            $example->setPassed($scenarioPassed);
+            $this->currentFeature->addScenario($example);
         }
-
-        $this->currentScenario->setPassed($event->getTestResult()->isPassed());
-        $this->currentFeature->addScenario($this->currentScenario);
     }
 
     /**
      * @param BehatEvent\BeforeStepTested $event
      */
-    public function onBeforeStepTested(BehatEvent\StepTested $event)
+    public function onBeforeStepTested(BehatEvent\BeforeStepTested $event)
     {
         $this->timer->start();
     }
@@ -456,10 +466,11 @@ class Formatter implements FormatterInterface
     /**
      * @param BehatEvent\AfterStepTested $event
      */
-    public function onAfterStepTested(BehatEvent\StepTested $event)
+    public function onAfterStepTested(BehatEvent\AfterStepTested $event)
     {
         $this->timer->stop();
 
+        /** @var Result\ExecutedStepResult $result */
         $result = $event->getTestResult();
 
         $step = new Node\Step();
@@ -471,11 +482,26 @@ class Formatter implements FormatterInterface
         $step->setResultCode($result->getResultCode());
         $step->setDuration($this->timer->getSeconds());
 
+
+        $match = ['location' => $result->getStepDefinition()->getPath()];
+        $arguments = [];
+        foreach ($result->getSearchResult()->getMatchedArguments() as $argument) {
+            $a = new \stdClass();
+            $a->val = $argument;
+            $arguments[] = $a;
+        }
+        if ($arguments) {
+            $match['arguments'] = $arguments;
+        }
+
+        $step->setMatch($match);
+
         $this->processStep($step, $result);
 
         $this->currentScenario->addStep($step);
     }
 
+    /** @inheritdoc */
     public function getName()
     {
         return 'cucumber_json';
@@ -496,6 +522,7 @@ class Formatter implements FormatterInterface
 
         // Skipped
         if (is_a($result, Result\SkippedStepResult::class)) {
+            /** @var Result\SkippedStepResult $result */
             $step->setDefinition($result->getStepDefinition());
             $this->skippedSteps[] = $step;
 
@@ -504,6 +531,7 @@ class Formatter implements FormatterInterface
 
         // Failed or passed
         if (is_a($result, Result\ExecutedStepResult::class)) {
+            /** @var Result\ExecutedStepResult $result */
             $step->setDefinition($result->getStepDefinition());
             $exception = $result->getException();
             if ($exception) {

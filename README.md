@@ -1,6 +1,6 @@
 # Behat Cucumber Json Formatter 
 
-[![Build Status](https://travis-ci.org/Vanare/behat-cucumber-formatter.svg?branch=master)](https://travis-ci.org/Vanare/behat-cucumber-formatter)
+*Note*: this is a fork of [Vanare/behat-cucumber-formatter](https://github.com/Vanare/behat-cucumber-formatter). As the original project seems unmaintained and there is no possibility to contact the owner, I publish the library under my handle. Many thanks to the original team of Vanare for starting this great library!
 
 This is Behat extension for generating json reports for [Cucumber Test Result Plugin](https://github.com/jenkinsci/cucumber-testresult-plugin/) which provides graphs over time and drill down to individual results using the standard Jenkins test reporting mechanism.
 
@@ -15,7 +15,7 @@ This is Behat extension for generating json reports for [Cucumber Test Result Pl
 ### Installation via Composer:
 
 ```
-$ composer require --dev vanare/behat-cucumber-json-formatter
+$ composer require --dev cawolf/behat-cucumber-json-formatter
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ Setup extension by specifying your `behat.yml`:
 default:
     extensions:
         Vanare\BehatCucumberJsonFormatter\Extension:
-            filename: report.json
+            fileNamePrefix: report
             outputDir: %paths.base%/build/tests
 ```
 
@@ -38,7 +38,7 @@ bin/behat -f cucumber_json
 
 ### Available options:
 
-- `filename`: Filename of generated report
+- `fileNamePrefix`: Filename prefix of generated report
 - `outputDir`: Generated report will be placed in this directory
 
 ## Licence

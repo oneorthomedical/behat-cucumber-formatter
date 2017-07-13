@@ -37,7 +37,7 @@ class Extension implements ExtensionInterface
      */
     public function configure(ArrayNodeDefinition $builder)
     {
-        $builder->children()->scalarNode('filename')->defaultValue('report.json');
+        $builder->children()->scalarNode('fileNamePrefix')->defaultValue('report');
         $builder->children()->scalarNode('outputDir')->defaultValue('build/tests');
     }
 
@@ -49,7 +49,7 @@ class Extension implements ExtensionInterface
     {
         $definition = new Definition('Vanare\\BehatCucumberJsonFormatter\\Formatter\\Formatter');
 
-        $definition->addArgument($config['filename']);
+        $definition->addArgument($config['fileNamePrefix']);
         $definition->addArgument($config['outputDir']);
 
         $container

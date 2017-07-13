@@ -105,14 +105,14 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
 
         // Feature
         $feature = array_pop($suite);
-        $keys = ['uri', 'id', 'keyword', 'name', 'line', 'description', 'elements', 'tags'];
+        $keys = ['uri', 'id', 'keyword', 'name', 'line', 'description', 'elements'];
         $this->assertArrayHasKeys($keys, $feature);
         $this->assertTrue(is_array($feature['elements']));
         $this->assertEquals(2, count($feature['elements']));
 
         // Scenario
         $scenario = array_pop($feature['elements']);
-        $keys = ['id', 'keyword', 'name', 'line', 'description', 'type', 'steps', 'tags'];
+        $keys = ['id', 'keyword', 'name', 'line', 'description', 'type', 'steps'];
         $this->assertArrayHasKeys($keys, $scenario);
         $this->assertTrue(is_array($scenario['steps']));
         $this->assertTrue(is_array($scenario['examples']));

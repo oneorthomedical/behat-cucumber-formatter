@@ -7,6 +7,8 @@ use Behat\Testwork\Output\Printer\OutputPrinter as OutputPrinterInterface;
 
 class FileOutputPrinter implements OutputPrinterInterface
 {
+    const FILE_SEPARATOR = '-';
+
     /**
      * @var string
      */
@@ -15,15 +17,20 @@ class FileOutputPrinter implements OutputPrinterInterface
     /**
      * @var string
      */
-    private $filename;
+    private $fileNamePrefix;
 
     /**
-     * @param $filename
+     * @var string
+     */
+    private $resultFileName = '';
+
+    /**
+     * @param $fileNamePrefix
      * @param $path
      */
-    public function __construct($filename, $path)
+    public function __construct($fileNamePrefix, $path)
     {
-        $this->filename = $filename;
+        $this->fileNamePrefix = $fileNamePrefix;
         $this->setOutputPath($path);
     }
 
@@ -56,6 +63,14 @@ class FileOutputPrinter implements OutputPrinterInterface
             }
         }
         $this->path = $path;
+    }
+
+    /**
+     * @param string $resultFileName
+     */
+    public function setResultFileName($resultFileName)
+    {
+        $this->resultFileName = $resultFileName;
     }
 
     /**
@@ -139,7 +154,7 @@ class FileOutputPrinter implements OutputPrinterInterface
      */
     public function write($messages, $append = false)
     {
-        $file = $this->getOutputPath().DIRECTORY_SEPARATOR.$this->filename;
+        $file = $this->getOutputPath() . DIRECTORY_SEPARATOR . $this->fileNamePrefix . $this->resultFileName . '.json';
 
         if ($append) {
             file_put_contents($file, $messages, FILE_APPEND);

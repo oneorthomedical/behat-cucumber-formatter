@@ -85,7 +85,7 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
         $expectedStructure = vfsStream::inspect(new vfsStreamStructureVisitor())->getStructure();
 
         // Assert that string was written
-        $this->assertEquals(['root' => ['test.json' => $messages]], $expectedStructure);
+        $this->assertEquals(['root' => ['testprefix.json' => $messages]], $expectedStructure);
     }
 
     /**
@@ -95,6 +95,6 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
      */
     protected function createPrinter($path)
     {
-        return new FileOutputPrinter('test.json', $path);
+        return new FileOutputPrinter('testprefix', $path);
     }
 }
