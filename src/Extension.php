@@ -22,7 +22,7 @@ class Extension implements ExtensionInterface
      */
     public function getConfigKey()
     {
-        return 'configKey';
+        return 'cucumber_json';
     }
 
     /**

@@ -132,6 +132,7 @@ class Formatter implements FormatterInterface
             BehatEvent\ScenarioTested::AFTER => 'onAfterScenarioTested',
             BehatEvent\OutlineTested::BEFORE => 'onBeforeOutlineTested',
             BehatEvent\OutlineTested::AFTER => 'onAfterOutlineTested',
+            BehatEvent\StepTested::BEFORE => 'onBeforeStepTested',
             BehatEvent\StepTested::AFTER => 'onAfterStepTested',
         ];
     }
@@ -299,9 +300,9 @@ class Formatter implements FormatterInterface
     /**
      * Triggers after running tests.
      *
-     * @param TestworkEvent\AfterExerciseCompleted $event
+     * @param TestworkEvent\ExerciseCompleted $event
      */
-    public function onAfterExercise(TestworkEvent\AfterExerciseCompleted $event)
+    public function onAfterExercise(TestworkEvent\ExerciseCompleted $event)
     {
         $this->timer->stop();
 
@@ -326,9 +327,9 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * @param TestworkEvent\AfterSuiteTested $event
+     * @param TestworkEvent\SuiteTested $event
      */
-    public function onAfterSuiteTested(TestworkEvent\AfterSuiteTested $event)
+    public function onAfterSuiteTested(TestworkEvent\SuiteTested $event)
     {
         $this->suites[] = $this->currentSuite;
     }
