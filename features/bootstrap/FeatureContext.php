@@ -21,7 +21,7 @@ class FeatureContext implements Context
      * Cleans test folders in the temporary directory.
      *
      * @BeforeSuite
-     * @ A fterSuite
+     * @AfterSuite
      */
     public static function cleanTestFolders()
     {
@@ -72,6 +72,7 @@ class FeatureContext implements Context
             true
         );
         mkdir($dir . DIRECTORY_SEPARATOR . 'junit');
+        mkdir($reportsDir);
 
         // create configuration
         file_put_contents($dir . DIRECTORY_SEPARATOR . 'behat.yml', <<<EOF
@@ -130,7 +131,7 @@ EOF
         $this->process->setWorkingDirectory($this->workingDir);
         $this->process->setCommandLine(
             sprintf(
-                '%s -dxdebug.remote_enable=On -dxdebug.remote_autostart=On -dxdebug.idekey=PHPSTORMBACKGROUND -dxdebug.remote_port=9000 %s -c %s -s default --no-interaction -f cucumber_json',
+                '%s %s -c %s -s default --no-interaction -f cucumber_json',
                 $this->phpBin,
                 escapeshellarg(BEHAT_BIN_PATH),
                 $this->workingDir . DIRECTORY_SEPARATOR . 'behat.yml'

@@ -28,7 +28,7 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
 
         $printer = $this->createPrinter($path);
 
-        $this->assertEquals($path, $printer->getOutputPath());
+        self::assertEquals($path, $printer->getOutputPath());
     }
 
     /**
@@ -40,8 +40,8 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
 
         $printer = $this->createPrinter($path);
 
-        $this->assertEquals($path, $printer->getOutputPath());
-        $this->assertEquals(0755, $this->validRoot->getChild('build_666')->getPermissions());
+        self::assertEquals($path, $printer->getOutputPath());
+        self::assertEquals(0755, $this->validRoot->getChild('build_666')->getPermissions());
     }
 
     /**
@@ -55,7 +55,7 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
 
         $path = $this->validRoot->getChild('secured_folder')->url().'/build_666';
 
-        $printer = $this->createPrinter($path);
+        $this->createPrinter($path);
     }
 
     /**
@@ -69,7 +69,7 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
 
         $path = $this->validRoot->getChild('file.exe')->url();
 
-        $printer = $this->createPrinter($path);
+        $this->createPrinter($path);
     }
 
     /**
@@ -82,10 +82,46 @@ class FileOutputPrinterTest extends \PHPUnit_Framework_TestCase
         $printer = $this->createPrinter($this->validRoot->url());
         $printer->write($messages);
 
-        $expectedStructure = vfsStream::inspect(new vfsStreamStructureVisitor())->getStructure();
+        /** @var vfsStreamStructureVisitor $visitor */
+        $visitor = vfsStream::inspect(new vfsStreamStructureVisitor());
+        $expectedStructure = $visitor->getStructure();
 
         // Assert that string was written
-        $this->assertEquals(['root' => ['testprefix.json' => $messages]], $expectedStructure);
+        self::assertEquals(['root' => ['testprefix.json' => $messages]], $expectedStructure);
+    }
+
+    /**
+     * @test
+     */
+    public function setResultFileNameAndWriteLn()
+    {
+        $messages = 'Messages will be here';
+
+        $printer = $this->createPrinter($this->validRoot->url());
+        $printer->setResultFileName('agreatsuffix');
+        $printer->writeln($messages);
+
+        /** @var vfsStreamStructureVisitor $visitor */
+        $visitor = vfsStream::inspect(new vfsStreamStructureVisitor());
+        $expectedStructure = $visitor->getStructure();
+
+        // Assert that string was written
+        self::assertEquals(['root' => ['testprefixagreatsuffix.json' => $messages]], $expectedStructure);
+    }
+
+    /**
+     * @test
+     */
+    public function inheritedUnusedInterface()
+    {
+        $printer = $this->createPrinter($this->validRoot->url());
+        $printer->setOutputStyles([]);
+        self::assertEquals([], $printer->getOutputStyles());
+        $printer->setOutputDecorated(false);
+        self::assertNull($printer->isOutputDecorated());
+        $printer->setOutputVerbosity(0);
+        self::assertEquals(0, $printer->getOutputVerbosity());
+        $printer->flush();
     }
 
     /**

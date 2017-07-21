@@ -17,11 +17,6 @@ class Step
     private $match = [ 'location' => '' ];
 
     /**
-     * @var array
-     */
-    private $embeddings = [];
-
-    /**
      * @var int
      */
     private $duration = 0;
@@ -112,22 +107,6 @@ class Step
     public function setMatch($match)
     {
         $this->match = $match;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEmbeddings()
-    {
-        return $this->embeddings;
-    }
-
-    /**
-     * @param array $embeddings
-     */
-    public function setEmbeddings($embeddings)
-    {
-        $this->embeddings = $embeddings;
     }
 
     /**

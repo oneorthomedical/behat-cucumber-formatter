@@ -73,85 +73,46 @@ class FileOutputPrinter implements OutputPrinterInterface
         $this->resultFileName = $resultFileName;
     }
 
-    /**
-     * Returns output path.
-     *
-     * @return null|string
-     *
-     * @deprecated since 3.1, to be removed in 4.0
-     */
+    /** @inheritdoc */
     public function getOutputPath()
     {
         return $this->path;
     }
 
-    /**
-     * Sets output styles.
-     *
-     * @param array $styles
-     */
+    /** @inheritdoc */
     public function setOutputStyles(array $styles)
     {
     }
 
-    /**
-     * Returns output styles.
-     *
-     * @return array
-     *
-     * @deprecated since 3.1, to be removed in 4.0
-     */
+    /** @inheritdoc */
     public function getOutputStyles()
     {
+        return [];
     }
 
-    /**
-     * Forces output to be decorated.
-     *
-     * @param Boolean $decorated
-     */
+    /** @inheritdoc */
     public function setOutputDecorated($decorated)
     {
     }
 
-    /**
-     * Returns output decoration status.
-     *
-     * @return null|Boolean
-     *
-     * @deprecated since 3.1, to be removed in 4.0
-     */
+    /** @inheritdoc */
     public function isOutputDecorated()
     {
+        return null;
     }
 
-    /**
-     * Sets output verbosity level.
-     *
-     * @param int $level
-     */
+    /** @inheritdoc */
     public function setOutputVerbosity($level)
     {
     }
 
-    /**
-     * Returns output verbosity level.
-     *
-     * @return int
-     *
-     * @deprecated since 3.1, to be removed in 4.0
-     */
+    /** @inheritdoc */
     public function getOutputVerbosity()
     {
         return 0;
     }
 
-    /**
-     * Writes message(s) to output stream.
-     *
-     * @param string|array $messages message or array of messages
-     * @param bool         $append
-     */
+    /** @inheritdoc */
     public function write($messages, $append = false)
     {
         $file = $this->getOutputPath() . DIRECTORY_SEPARATOR . $this->fileNamePrefix . $this->resultFileName . '.json';
@@ -163,19 +124,13 @@ class FileOutputPrinter implements OutputPrinterInterface
         }
     }
 
-    /**
-     * Writes newlined message(s) to output stream.
-     *
-     * @param string|array $messages message or array of messages
-     */
+    /** @inheritdoc */
     public function writeln($messages = '')
     {
         $this->write($messages, true);
     }
 
-    /**
-     * Clear output stream, so on next write formatter will need to init (create) it again.
-     */
+    /** @inheritdoc */
     public function flush()
     {
     }

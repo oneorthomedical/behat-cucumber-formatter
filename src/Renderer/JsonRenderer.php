@@ -25,8 +25,7 @@ class JsonRenderer implements RendererInterface
         $this->formatter = $formatter;
     }
 
-    /**
-     */
+    /** @inheritdoc */
     public function render()
     {
         $suites = $this->formatter->getSuites();
@@ -38,11 +37,7 @@ class JsonRenderer implements RendererInterface
         }
     }
 
-    /**
-     * @param bool|true $asString
-     *
-     * @return array|string
-     */
+    /** @inheritdoc */
     public function getResult($asString = true)
     {
         if ($asString) {
@@ -152,10 +147,6 @@ class JsonRenderer implements RendererInterface
             'result' => $step->getProcessedResult(),
         ];
 
-        if (count($step->getEmbeddings())) {
-            $result['embeddings'] = $step->getEmbeddings();
-        }
-
         return $result;
     }
 
@@ -202,7 +193,7 @@ class JsonRenderer implements RendererInterface
      * @param array $tags
      * @return array
      */
-    public function processTags(array $tags)
+    protected function processTags(array $tags)
     {
         $result = [];
 

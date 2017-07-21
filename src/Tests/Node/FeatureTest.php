@@ -6,7 +6,6 @@ use Vanare\BehatCucumberJsonFormatter\Node;
 
 class FeatureTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @test
      */
@@ -18,7 +17,7 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
         $feature = $this->createFeature();
         $feature->setName($name);
 
-        $this->assertEquals($expectedId, $feature->getId());
+        self::assertEquals($expectedId, $feature->getId());
     }
 
     /**
@@ -31,7 +30,7 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
         $feature = $this->createFeature();
         $feature->setFile($file);
 
-        $this->assertEquals($file, $feature->getUri());
+        self::assertEquals($file, $feature->getUri());
     }
 
     /**
@@ -41,5 +40,4 @@ class FeatureTest extends \PHPUnit_Framework_TestCase
     {
         return new Node\Feature();
     }
-
 }

@@ -8,6 +8,8 @@ use Vanare\BehatCucumberJsonFormatter\Node\Suite;
 interface FormatterInterface extends FormatterOutputInterface
 {
     /**
+     * Returns all executed suites.
+     *
      * @return Suite[]
      */
     public function getSuites();

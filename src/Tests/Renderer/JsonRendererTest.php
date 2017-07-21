@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: evgenyg
- * Date: 09/10/15
- * Time: 15:29.
- */
 namespace Vanare\BehatCucumberJsonFormatter\Tests\Renderer;
 
 use Vanare\BehatCucumberJsonFormatter\Node;
@@ -45,13 +39,11 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
     protected $feature;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject|FormatterInterface
      */
     protected $formatter;
 
-    /**
-     *
-     */
+    /** @inheritdoc */
     public function setUp()
     {
         $this->step = $this->getMockBuilder(Node\Step::class)->getMock();
@@ -69,9 +61,9 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
     public function renderShouldNotFailsIfWeGaveEmptyScenariosList()
     {
         $this->feature
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getScenarios')
-            ->will($this->returnValue(null))
+            ->will(self::returnValue(null))
         ;
 
         $this->generateMockStructure();
@@ -91,8 +83,8 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
         $renderer->render();
         $result = $renderer->getResult(false);
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(1, count($result));
+        self::assertTrue(is_array($result));
+        self::assertEquals(1, count($result));
 
         /*
          * Run through structure
@@ -100,41 +92,43 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
 
         // Suite
         $suite = array_pop($result);
-        $this->assertTrue(is_array($suite));
-        $this->assertEquals(2, count($suite));
+        self::assertTrue(is_array($suite));
+        self::assertEquals(2, count($suite));
 
         // Feature
         $feature = array_pop($suite);
-        $keys = ['uri', 'id', 'keyword', 'name', 'line', 'description', 'elements'];
-        $this->assertArrayHasKeys($keys, $feature);
-        $this->assertTrue(is_array($feature['elements']));
-        $this->assertEquals(2, count($feature['elements']));
+        $keys = ['uri', 'id', 'keyword', 'name', 'line', 'description', 'elements', 'tags'];
+        self::assertArrayHasKeys($keys, $feature);
+        self::assertTrue(is_array($feature['elements']));
+        self::assertEquals(2, count($feature['elements']));
+        self::assertEquals(2, count($feature['tags']));
 
         // Scenario
         $scenario = array_pop($feature['elements']);
-        $keys = ['id', 'keyword', 'name', 'line', 'description', 'type', 'steps'];
-        $this->assertArrayHasKeys($keys, $scenario);
-        $this->assertTrue(is_array($scenario['steps']));
-        $this->assertTrue(is_array($scenario['examples']));
-        $this->assertEquals(3, count($scenario['steps']));
-        $this->assertEquals(2, count($scenario['examples']));
+        $keys = ['id', 'keyword', 'name', 'line', 'description', 'type', 'steps', 'tags'];
+        self::assertArrayHasKeys($keys, $scenario);
+        self::assertTrue(is_array($scenario['steps']));
+        self::assertTrue(is_array($scenario['examples']));
+        self::assertEquals(3, count($scenario['steps']));
+        self::assertEquals(2, count($scenario['examples']));
+        self::assertEquals(2, count($scenario['tags']));
 
         // Step
         $step = array_pop($scenario['steps']);
         $keys = ['keyword', 'name', 'line', 'match', 'result'];
-        $this->assertArrayHasKeys($keys, $step);
+        self::assertArrayHasKeys($keys, $step);
 
         // Example
         $example = array_pop($scenario['examples']);
         $keys = ['keyword', 'name', 'line', 'description', 'id', 'rows'];
-        $this->assertArrayHasKeys($keys, $example);
-        $this->assertTrue(is_array($example['rows']));
-        $this->assertEquals(2, count($example['rows']));
+        self::assertArrayHasKeys($keys, $example);
+        self::assertTrue(is_array($example['rows']));
+        self::assertEquals(2, count($example['rows']));
 
         // ExampleRow
         $row = array_pop($example['rows']);
         $keys = ['cells', 'line', 'id'];
-        $this->assertArrayHasKeys($keys, $row);
+        self::assertArrayHasKeys($keys, $row);
     }
 
     /**
@@ -147,7 +141,7 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
         $renderer = $this->createRenderer();
         $renderer->render();
 
-        $this->assertJson($renderer->getResult());
+        self::assertJson($renderer->getResult());
     }
 
     /**
@@ -164,50 +158,66 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
     protected function generateMockStructure()
     {
         $this->example
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getRows')
-            ->will($this->returnValue([
+            ->will(self::returnValue([
                 $this->exampleRow,
                 $this->exampleRow,
             ]));
 
         $this->scenario
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSteps')
-            ->will($this->returnValue([
+            ->will(self::returnValue([
                 $this->step,
                 $this->step,
                 $this->step,
             ]));
 
         $this->scenario
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getExamples')
-            ->will($this->returnValue([
+            ->will(self::returnValue([
                 $this->example,
                 $this->example,
+            ]));
+
+        $this->scenario
+            ->expects(self::any())
+            ->method('getTags')
+            ->will(self::returnValue([
+                 'tag1',
+                 'tag2'
+             ]));
+
+        $this->feature
+            ->expects(self::any())
+            ->method('getScenarios')
+            ->will(self::returnValue([
+                $this->scenario,
+                $this->scenario,
             ]));
 
         $this->feature
-            ->expects($this->any())
-            ->method('getScenarios')
-            ->will($this->returnValue([
-                $this->scenario,
-                $this->scenario,
+            ->expects(self::any())
+            ->method('getTags')
+            ->will(self::returnValue([
+                'tag1',
+                'tag2'
             ]));
 
         $this->suite
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getFeatures')
-            ->will($this->returnValue([
+            ->will(self::returnValue([
                 $this->feature,
                 $this->feature,
             ]));
 
         $this->formatter
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('getSuites')
-            ->will($this->returnValue([
+            ->will(self::returnValue([
                 $this->suite,
             ]));
     }
@@ -220,7 +230,7 @@ class JsonRendererTest extends \PHPUnit_Framework_TestCase
     protected function assertArrayHasKeys(array $keys, array $array, $message = '')
     {
         foreach ($keys as $key) {
-            $this->assertArrayHasKey($key, $array, $message);
+            self::assertArrayHasKey($key, $array, $message);
         }
     }
 }
