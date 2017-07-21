@@ -4,7 +4,6 @@ namespace Vanare\BehatCucumberJsonFormatter\Formatter;
 
 use Behat\Behat\EventDispatcher\Event as BehatEvent;
 use Behat\Behat\Tester\Result;
-use Behat\Testwork\Counter\Memory;
 use Behat\Testwork\Counter\Timer;
 use Behat\Testwork\EventDispatcher\Event as TestworkEvent;
 use Behat\Testwork\Output\Printer\OutputPrinter;
@@ -17,105 +16,42 @@ use Vanare\BehatCucumberJsonFormatter\Renderer\RendererInterface;
 
 class Formatter implements FormatterInterface
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $parameters;
 
-    /**
-     * @var Timer
-     */
+    /** @var Timer */
     private $timer;
 
-    /**
-     * @var string
-     */
-    private $memory;
-
-    /**
-     * @var OutputPrinter
-     */
+    /** @var OutputPrinter */
     private $printer;
 
-    /**
-     * @var RendererInterface
-     */
+    /** @var RendererInterface */
     private $renderer;
 
-    /**
-     * @var Node\Suite[]
-     */
+    /** @var Node\Suite[] */
     private $suites;
 
-    /**
-     * @var Node\Suite
-     */
+    /** @var Node\Suite */
     private $currentSuite;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $featureCounter = 1;
-    /**
-     * @var Node\Feature
-     */
+
+    /** @var Node\Feature */
     private $currentFeature;
 
-    /**
-     * @var Node\Scenario
-     */
+    /** @var Node\Scenario */
     private $currentScenario;
 
     /**
-     * @var Node\Scenario[]
-     */
-    private $failedScenarios;
-
-    /**
-     * @var Node\Scenario[]
-     */
-    private $passedScenarios;
-
-    /**
-     * @var Node\Feature[]
-     */
-    private $failedFeatures;
-
-    /**
-     * @var Node\Feature[]
-     */
-    private $passedFeatures;
-
-    /**
-     * @var Node\Step[]
-     */
-    private $failedSteps;
-
-    /**
-     * @var Node\Step[]
-     */
-    private $passedSteps;
-
-    /**
-     * @var Node\Step[]
-     */
-    private $pendingSteps;
-
-    /**
-     * @var Node\Step[]
-     */
-    private $skippedSteps;
-
-    /**
-     * @param $fileNamePrefix
-     * @param $outputDir
+     * @param string $fileNamePrefix
+     * @param string $outputDir
      */
     public function __construct($fileNamePrefix, $outputDir)
     {
         $this->renderer = new JsonRenderer($this);
         $this->printer = new FileOutputPrinter($fileNamePrefix, $outputDir);
         $this->timer = new Timer();
-        $this->memory = new Memory();
     }
 
     /** @inheritdoc */
@@ -161,130 +97,10 @@ class Formatter implements FormatterInterface
         return $this->parameters[$name];
     }
 
-    /**
-     * @return Timer
-     */
-    public function getTimer()
-    {
-        return $this->timer;
-    }
-
-    /**
-     * @return Memory|string
-     */
-    public function getMemory()
-    {
-        return $this->memory;
-    }
-
     /** @inheritdoc */
     public function getSuites()
     {
         return $this->suites;
-    }
-
-    /**
-     * @return Node\Suite
-     */
-    public function getCurrentSuite()
-    {
-        return $this->currentSuite;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFeatureCounter()
-    {
-        return $this->featureCounter;
-    }
-
-    /**
-     * @return Node\Feature
-     */
-    public function getCurrentFeature()
-    {
-        return $this->currentFeature;
-    }
-
-    /**
-     * @return Node\Scenario
-     */
-    public function getCurrentScenario()
-    {
-        return $this->currentScenario;
-    }
-
-    /**
-     * @param Node\Scenario $scenario
-     */
-    public function setCurrentScenario(Node\Scenario $scenario)
-    {
-        $this->currentScenario = $scenario;
-    }
-
-    /**
-     * @return Node\Scenario[]
-     */
-    public function getFailedScenarios()
-    {
-        return $this->failedScenarios;
-    }
-
-    /**
-     * @return Node\Scenario[]
-     */
-    public function getPassedScenarios()
-    {
-        return $this->passedScenarios;
-    }
-
-    /**
-     * @return Node\Feature[]
-     */
-    public function getFailedFeatures()
-    {
-        return $this->failedFeatures;
-    }
-
-    /**
-     * @return Node\Feature[]
-     */
-    public function getPassedFeatures()
-    {
-        return $this->passedFeatures;
-    }
-
-    /**
-     * @return Node\Step[]
-     */
-    public function getFailedSteps()
-    {
-        return $this->failedSteps;
-    }
-
-    /**
-     * @return Node\Step[]
-     */
-    public function getPassedSteps()
-    {
-        return $this->passedSteps;
-    }
-
-    /**
-     * @return Node\Step[]
-     */
-    public function getPendingSteps()
-    {
-        return $this->pendingSteps;
-    }
-
-    /**
-     * @return Node\Step[]
-     */
-    public function getSkippedSteps()
-    {
-        return $this->skippedSteps;
     }
 
     /**
@@ -311,7 +127,7 @@ class Formatter implements FormatterInterface
             str_replace(
                 DIRECTORY_SEPARATOR,
                 FileOutputPrinter::FILE_SEPARATOR,
-                $this->getCurrentFeature()->getFilenameForReport()
+                $this->currentFeature->getFilenameForReport()
             )
         );
         $this->printer->write($this->renderer->getResult());
@@ -357,11 +173,6 @@ class Formatter implements FormatterInterface
     public function onAfterFeatureTested(BehatEvent\AfterFeatureTested $event)
     {
         $this->currentSuite->addFeature($this->currentFeature);
-        if ($this->currentFeature->allPassed()) {
-            $this->passedFeatures[] = $this->currentFeature;
-        } else {
-            $this->failedFeatures[] = $this->currentFeature;
-        }
     }
 
     /**
@@ -396,10 +207,8 @@ class Formatter implements FormatterInterface
         $scenarioPassed = $event->getTestResult()->isPassed();
 
         if ($scenarioPassed) {
-            $this->passedScenarios[] = $this->currentScenario;
             $this->currentFeature->addPassedScenario();
         } else {
-            $this->failedScenarios[] = $this->currentScenario;
             $this->currentFeature->addFailedScenario();
         }
 
@@ -444,10 +253,8 @@ class Formatter implements FormatterInterface
             $scenarioPassed = $testResult->isPassed();
 
             if ($scenarioPassed) {
-                $this->passedScenarios[] = $example;
                 $this->currentFeature->addPassedScenario();
             } else {
-                $this->failedScenarios[] = $example;
                 $this->currentFeature->addFailedScenario();
             }
 
@@ -473,6 +280,10 @@ class Formatter implements FormatterInterface
 
         /** @var Result\ExecutedStepResult $result */
         $result = $event->getTestResult();
+
+        if ($result instanceof Result\UndefinedStepResult || $result instanceof Result\SkippedStepResult) {
+            return;
+        }
 
         $step = new Node\Step();
         $step->setKeyword($event->getStep()->getKeyword());
@@ -516,8 +327,6 @@ class Formatter implements FormatterInterface
     {
         // Pended
         if (is_a($result, Result\UndefinedStepResult::class)) {
-            $this->pendingSteps[] = $step;
-
             return;
         }
 
@@ -525,7 +334,6 @@ class Formatter implements FormatterInterface
         if (is_a($result, Result\SkippedStepResult::class)) {
             /** @var Result\SkippedStepResult $result */
             $step->setDefinition($result->getStepDefinition());
-            $this->skippedSteps[] = $step;
 
             return;
         }
@@ -537,9 +345,6 @@ class Formatter implements FormatterInterface
             $exception = $result->getException();
             if ($exception) {
                 $step->setException($exception->getMessage());
-                $this->failedSteps[] = $step;
-            } else {
-                $this->passedSteps[] = $step;
             }
 
             return;
