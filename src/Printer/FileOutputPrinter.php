@@ -78,7 +78,7 @@ class FileOutputPrinter implements OutputPrinterInterface
      */
     public function getResultFileName()
     {
-      return $this->resultFileName;
+        return $this->resultFileName;
     }
 
     /** @inheritdoc */

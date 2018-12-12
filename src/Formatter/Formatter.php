@@ -75,7 +75,7 @@ class Formatter implements FormatterInterface
 
     /** @inheritdoc */
     public function setFileName($fileName) {
-      $this->printer->setResultFileName($fileName);
+        $this->printer->setResultFileName($fileName);
     }
 
     /** @inheritdoc */
@@ -129,13 +129,13 @@ class Formatter implements FormatterInterface
 
         $this->renderer->render();
         if (!$this->printer->getResultFileName()) {
-          $this->printer->setResultFileName(
-              str_replace(
-                  DIRECTORY_SEPARATOR,
-                  FileOutputPrinter::FILE_SEPARATOR,
-                  $this->currentFeature->getFilenameForReport()
-              )
-          );
+            $this->printer->setResultFileName(
+                str_replace(
+                    DIRECTORY_SEPARATOR,
+                    FileOutputPrinter::FILE_SEPARATOR,
+                    $this->currentFeature->getFilenameForReport()
+                )
+            );
         }
 
         $this->printer->write($this->renderer->getResult());
