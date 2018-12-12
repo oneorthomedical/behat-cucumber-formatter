@@ -54,7 +54,7 @@ class Extension implements ExtensionInterface
         $definition->addArgument($config['outputDir']);
 
         if (!empty($config['fileName'])) {
-          $definition->addMethodCall('setFileName', [$config['fileName']]);
+            $definition->addMethodCall('setFileName', [$config['fileName']]);
         }
 
         $container
