@@ -74,6 +74,11 @@ class Formatter implements FormatterInterface
     }
 
     /** @inheritdoc */
+    public function setFileName($fileName) {
+      $this->printer->setResultFileName($fileName);
+    }
+
+    /** @inheritdoc */
     public function getDescription()
     {
         return 'Cucumber style formatter';
@@ -123,13 +128,16 @@ class Formatter implements FormatterInterface
         $this->timer->stop();
 
         $this->renderer->render();
-        $this->printer->setResultFileName(
-            str_replace(
-                DIRECTORY_SEPARATOR,
-                FileOutputPrinter::FILE_SEPARATOR,
-                $this->currentFeature->getFilenameForReport()
-            )
-        );
+        if (!$this->printer->getResultFileName()) {
+          $this->printer->setResultFileName(
+              str_replace(
+                  DIRECTORY_SEPARATOR,
+                  FileOutputPrinter::FILE_SEPARATOR,
+                  $this->currentFeature->getFilenameForReport()
+              )
+          );
+        }
+
         $this->printer->write($this->renderer->getResult());
     }
 
