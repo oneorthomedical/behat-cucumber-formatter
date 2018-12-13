@@ -13,4 +13,11 @@ interface FormatterInterface extends FormatterOutputInterface
      * @return Suite[]
      */
     public function getSuites();
+
+    /**
+     * Set a fixed filename, which will override the current feature filename.
+     *
+     * @param $fileName
+     */
+    public function setFileName($fileName);
 }

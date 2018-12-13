@@ -40,6 +40,7 @@ bin/behat -f cucumber_json
 
 - `fileNamePrefix`: Filename prefix of generated report
 - `outputDir`: Generated report will be placed in this directory
+- `fileName` _(optional)_: Filename of generated report - current feature name will be used by default.
 
 ## Licence
 
