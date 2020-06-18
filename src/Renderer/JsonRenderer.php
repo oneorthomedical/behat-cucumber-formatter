@@ -32,7 +32,7 @@ class JsonRenderer implements RendererInterface
 
         if (is_array($suites)) {
             foreach ($suites as $suite) {
-                array_push($this->result, $this->processSuite($suite));
+                $this->result[$suite->getName()] = $this->processSuite($suite);
             }
         }
     }
@@ -41,10 +41,27 @@ class JsonRenderer implements RendererInterface
     public function getResult($asString = true)
     {
         if ($asString) {
-            return json_encode(array_pop($this->result));
+            $mergedResults = [];
+            foreach ($this->result as $result) {
+                $mergedResults = array_merge($mergedResults, $result);
+            }
+            return json_encode($mergedResults);
         }
 
         return $this->result;
+    }
+
+    public function getResultForSuite($suiteName, $asString = true)
+    {
+        $result = null;
+        if (isset($this->result[$suiteName])) {
+            $result = $this->result[$suiteName];
+        }
+
+        if ($asString) {
+            return json_encode($result);
+        }
+        return $result;
     }
 
     /**
