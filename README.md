@@ -6,7 +6,7 @@ This is Behat extension for generating json reports for [Cucumber Test Result Pl
 
 ## Requirements
 
-- PHP 5.5.x or higher
+- PHP 7.2 or higher
 
 - Behat 3.x
 
