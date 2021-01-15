@@ -18,7 +18,8 @@
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.3",
+    "ext-json": "*",
     "behat/behat": "^3.0"
   },
   "minimum-stability": "dev",
@@ -29,8 +30,9 @@
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "mikey179/vfsstream": "^1.6",
-    "phpunit/phpunit": "^5.0",
-    "symfony/process": "^3.0"
+    "phpunit/phpunit": "^9.5",
+    "symfony/process": "^4.4",
+    "phpstan/phpstan": "^0.12.66"
   },
   "autoload": {
     "psr-4": {
@@ -39,6 +41,7 @@
   },
   "scripts": {
     "test": [
+      "bin/phpstan analyse --no-progress -l 5 src",
       "bin/phpunit",
       "bin/behat"
     ]
