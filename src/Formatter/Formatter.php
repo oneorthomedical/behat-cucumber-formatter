@@ -312,9 +312,11 @@ class Formatter implements FormatterInterface
         $match = ['location' => $result->getStepDefinition()->getPath()];
         $arguments = [];
         foreach ($result->getSearchResult()->getMatchedArguments() as $argument) {
-            $a = new \stdClass();
-            $a->val = $argument;
-            $arguments[] = $a;
+            if ((is_object($argument) and method_exists($argument, '__toString')) || is_null($argument) || is_scalar($argument)) {
+                $a = new \stdClass();
+                $a->val = (string)$argument;
+                $arguments[] = $a;
+            }
         }
         if ($arguments) {
             $match['arguments'] = $arguments;
