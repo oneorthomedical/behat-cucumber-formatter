@@ -313,7 +313,7 @@ class Formatter implements FormatterInterface
         $arguments = [];
         foreach ($result->getSearchResult()->getMatchedArguments() as $argument) {
             $a = new \stdClass();
-            $a->val = (string) $argument;
+            $a->val = $argument;
             $arguments[] = $a;
         }
         if ($arguments) {
